@@ -6,8 +6,8 @@ steps:
   # Step 2: Start Cloud SQL proxy and run Sequelize migrations
   - name: 'gcr.io/cloud-builders/npm'
     entrypoint: 'bash'
-    secretEnv:
-      - DATABASE_URL
+    env:
+      - 'DATABASE_URL=postgresql://client_user:D#dhruv123@/client_info?host=/cloudsql/client-inf0-app-ca1:europe-west1:client-info-sql'
     args:
       - -c
       - |
@@ -42,8 +42,3 @@ steps:
 
 options:
   logging: CLOUD_LOGGING_ONLY
-
-availableSecrets:
-  secretManager:
-    - versionName: projects/787239516184/secrets/DATABASE_URL/versions/latest
-      env: 'DATABASE_URL'
