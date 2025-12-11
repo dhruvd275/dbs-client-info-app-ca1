@@ -6,8 +6,8 @@ steps:
   # Step 2: Run Sequelize migrations against Cloud SQL
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
-    secretEnv:
-      - DATABASE_URL
+    env:
+      - 'DATABASE_URL=postgresql://client_user:D#dhruv123@/client_info?host=/cloudsql/client-inf0-app-ca1:europe-west1:client-info-sql'
     args:
       - '-c'
       - |
@@ -20,7 +20,7 @@ steps:
         echo "Starting Cloud SQL Auth Proxy..."
         ./cloud-sql-proxy \
           --instances=client-inf0-app-ca1:europe-west1:client-info-sql=tcp:5432 &
-        
+
         # Give proxy a moment to start
         sleep 5
 
@@ -28,7 +28,6 @@ steps:
         npx sequelize-cli db:migrate
 
         echo "Stopping Cloud SQL Auth Proxy..."
-        # Kill any process named cloud-sql-proxy (no PROXY_PID variable)
         pkill cloud-sql-proxy || true
 
   # Step 3: Deploy to App Engine
@@ -40,8 +39,3 @@ steps:
 
 options:
   logging: CLOUD_LOGGING_ONLY
-
-availableSecrets:
-  secretManager:
-    - versionName: projects/787239516184/secrets/DATABASE_URL/versions/latest
-      env: 'DATABASE_URL'

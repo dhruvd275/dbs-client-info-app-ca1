@@ -9,3 +9,4 @@ automatic_scaling:
 
 env_variables:
   NODE_ENV: "production"
+  DATABASE_URL: 'postgresql://client_user:D#dhruv123@/client_info?host=/cloudsql/client-inf0-app-ca1:europe-west1:client-info-sql'
