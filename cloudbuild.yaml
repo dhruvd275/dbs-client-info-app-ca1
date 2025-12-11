@@ -6,7 +6,8 @@ steps:
   # Step 2: Run Sequelize migrations against Cloud SQL
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
-    secretEnv: ['DATABASE_URL']
+    secretEnv:
+      - DATABASE_URL
     args:
       - '-c'
       - |
@@ -18,10 +19,10 @@ steps:
 
         echo "Starting Cloud SQL Auth Proxy..."
         ./cloud-sql-proxy \
-          --instances=client-infO-app-ca1:europe-west1:client-info-sql=tcp:5432 &
+          --instances=client-inf0-app-ca1:europe-west1:client-info-sql=tcp:5432 &
         PROXY_PID=$!
 
-        # Wait a bit for proxy to be ready
+        # Give proxy a moment to start
         sleep 5
 
         echo "Running Sequelize migrations..."
@@ -37,9 +38,8 @@ steps:
       - 'deploy'
       - '--quiet'
 
-    options:
-    logging: CLOUD_LOGGING_ONLY
-
+options:
+  logging: CLOUD_LOGGING_ONLY
 
 availableSecrets:
   secretManager:
