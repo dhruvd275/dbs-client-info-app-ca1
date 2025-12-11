@@ -4,6 +4,9 @@ This repository contains my cloud deployment assignment for the Client Informati
 
 CI/CD: Cloud Build trigger test.
 
+Trigger test #2 – CI/CD pipeline check
+
+
 #creating a trigger for Gcloud
 gcloud beta builds triggers create github \
   --name="deploy-client-info-app" \
