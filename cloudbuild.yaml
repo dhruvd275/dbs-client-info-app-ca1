@@ -37,6 +37,10 @@ steps:
       - 'deploy'
       - '--quiet'
 
+    options:
+    logging: CLOUD_LOGGING_ONLY
+
+
 availableSecrets:
   secretManager:
     - versionName: projects/787239516184/secrets/DATABASE_URL/versions/latest
