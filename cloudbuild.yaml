@@ -20,8 +20,7 @@ steps:
         echo "Starting Cloud SQL Auth Proxy..."
         ./cloud-sql-proxy \
           --instances=client-inf0-app-ca1:europe-west1:client-info-sql=tcp:5432 &
-        PROXY_PID=$!
-
+        
         # Give proxy a moment to start
         sleep 5
 
@@ -29,7 +28,8 @@ steps:
         npx sequelize-cli db:migrate
 
         echo "Stopping Cloud SQL Auth Proxy..."
-        kill $PROXY_PID
+        # Kill any process named cloud-sql-proxy (no PROXY_PID variable)
+        pkill cloud-sql-proxy || true
 
   # Step 3: Deploy to App Engine
   - name: 'gcr.io/cloud-builders/gcloud'
