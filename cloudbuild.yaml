@@ -1,0 +1,43 @@
+steps:
+  # Step 1: Install Node.js dependencies
+  - name: 'gcr.io/cloud-builders/npm'
+    args: ['install']
+
+  # Step 2: Run Sequelize migrations against Cloud SQL
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    secretEnv: ['DATABASE_URL']
+    args:
+      - '-c'
+      - |
+        set -e
+
+        echo "Downloading Cloud SQL Auth Proxy..."
+        curl -o cloud-sql-proxy https://dl.google.com/cloudsql/cloud-sql-proxy.linux.amd64
+        chmod +x cloud-sql-proxy
+
+        echo "Starting Cloud SQL Auth Proxy..."
+        ./cloud-sql-proxy \
+          --instances=client-infO-app-ca1:europe-west1:client-info-sql=tcp:5432 &
+        PROXY_PID=$!
+
+        # Wait a bit for proxy to be ready
+        sleep 5
+
+        echo "Running Sequelize migrations..."
+        npx sequelize-cli db:migrate
+
+        echo "Stopping Cloud SQL Auth Proxy..."
+        kill $PROXY_PID
+
+  # Step 3: Deploy to App Engine
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'app'
+      - 'deploy'
+      - '--quiet'
+
+availableSecrets:
+  secretManager:
+    - versionName: projects/787239516184/secrets/DATABASE_URL/versions/latest
+      env: 'DATABASE_URL'
